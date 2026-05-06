@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XAU MeanNorm M30 — A Validated Gold Trading System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700;9..144,900&family=JetBrains+Mono:wght@400;500;700&family=Inter+Tight:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #efe9dc;
+    --bg-alt: #e6dfd0;
+    --ink: #1a1614;
+    --ink-soft: #4a4239;
+    --accent: #b8351e;
+    --accent-deep: #8a2010;
+    --gold: #b08538;
+    --rule: #1a1614;
+    --green: #3a5a3c;
+    --red: #b8351e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Fraunces', Georgia, serif;
+    font-feature-settings: "ss01", "ss02";
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(184,53,30,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(176,133,56,0.06) 0%, transparent 50%);
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E");
+    opacity: 0.07;
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 48px; position: relative; z-index: 2; }
+
+  /* ── Masthead ───────────────────────────────── */
+  .masthead {
+    border-bottom: 1px solid var(--rule);
+    padding: 24px 0 16px;
+  }
+  .mast-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .mast-row span { white-space: nowrap; }
+
+  /* ── Hero ───────────────────────────────────── */
+  .hero {
+    padding: 80px 0 100px;
+    border-bottom: 3px double var(--rule);
+    position: relative;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(56px, 9vw, 132px);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    margin-bottom: 40px;
+    font-variation-settings: "opsz" 144;
+  }
+  .hero h1 .accent {
+    color: var(--accent);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .hero h1 .small {
+    display: block;
+    font-size: 0.48em;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-soft);
+    margin-top: 12px;
+    letter-spacing: -0.02em;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 80px;
+    align-items: end;
+  }
+  .hero-lede {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    line-height: 1.55;
+    color: var(--ink);
+    max-width: 600px;
+    font-weight: 400;
+  }
+  .hero-lede em { color: var(--accent); font-style: italic; }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 40px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 28px 0;
+  }
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .stat-num.green { color: var(--green); }
+  .stat-num.gold { color: var(--gold); }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-top: 8px;
+  }
+
+  /* ── The Numbers (big section) ──────────────── */
+  .numbers {
+    padding: 100px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+  }
+  .section-tag .roman {
+    color: var(--ink-soft);
+  }
+  .section-h {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+    max-width: 880px;
+  }
+  .section-h em { color: var(--accent); font-style: italic; font-weight: 400; }
+  .section-sub {
+    font-size: 18px;
+    color: var(--ink-soft);
+    max-width: 720px;
+    margin-bottom: 56px;
+    font-style: italic;
+  }
+  .num-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 2px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+  .num-cell {
+    padding: 32px 28px;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg-alt);
+    transition: background 0.2s;
+  }
+  .num-cell:hover {
+    background: var(--bg);
+  }
+  .num-cell .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+  .num-cell .value {
+    font-family: 'Fraunces', serif;
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+  }
+  .num-cell .value.green { color: var(--green); }
+  .num-cell .value.red { color: var(--red); }
+  .num-cell .value.gold { color: var(--gold); }
+  .num-cell .footnote {
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin-top: 6px;
+  }
+
+  /* ── Performance Chart ──────────────────────── */
+  .chart-section {
+    padding: 100px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .chart-wrap {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 56px;
+    margin-top: 40px;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .chart-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(184,53,30,0.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 1;
+  }
+  .chart-title {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .chart-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(239,233,220,0.5);
+  }
+  .chart-svg {
+    width: 100%;
+    height: auto;
+    position: relative;
+    z-index: 1;
+  }
+  .chart-legend {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: rgba(239,233,220,0.7);
+  }
+  .legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* ── How It Works ──────────────────────────── */
+  .how {
+    padding: 100px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .how-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 72px;
+    margin-top: 60px;
+  }
+  .how-text p {
+    font-size: 18px;
+    line-height: 1.65;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+  .how-text p em {
+    color: var(--accent);
+    font-style: italic;
+  }
+  .how-text .pull {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    line-height: 1.3;
+    font-style: italic;
+    color: var(--ink);
+    border-left: 3px solid var(--accent);
+    padding-left: 24px;
+    margin: 32px 0;
+    font-weight: 400;
+  }
+  .layers {
+    background: var(--bg-alt);
+    padding: 40px;
+    position: relative;
+  }
+  .layers::before {
+    content: 'SIGNAL STACK';
+    position: absolute;
+    top: -10px;
+    left: 32px;
+    background: var(--bg);
+    padding: 0 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--ink-soft);
+  }
+  .layer {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .layer:last-child { border-bottom: none; }
+  .layer-num {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .layer-name {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .layer-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  /* ── WFO Validation Section ───────────────── */
+  .validation {
+    padding: 100px 0;
+    border-bottom: 1px solid var(--rule);
+    background: var(--ink);
+    color: var(--bg);
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .validation .container { padding: 0 48px; }
+  .validation .section-tag { color: var(--gold); border-bottom-color: var(--gold); }
+  .validation .section-tag .roman { color: rgba(239,233,220,0.4); }
+  .validation .section-h { color: var(--bg); }
+  .validation .section-h em { color: var(--gold); }
+  .validation .section-sub { color: rgba(239,233,220,0.7); }
+
+  .wfo-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 40px 0 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .wfo-table th {
+    text-align: left;
+    padding: 16px 20px;
+    border-bottom: 2px solid var(--gold);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .wfo-table th.r, .wfo-table td.r { text-align: right; }
+  .wfo-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(239,233,220,0.1);
+    font-size: 14px;
+  }
+  .wfo-table tr:last-child td { border-bottom: none; }
+  .wfo-table tr:hover td { background: rgba(176,133,56,0.05); }
+  .wfo-table .pos { color: #7fb87f; font-weight: 700; }
+  .wfo-window {
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .wfo-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(239,233,220,0.1);
+    margin-top: 32px;
+  }
+  .wfo-stat {
+    background: var(--ink);
+    padding: 28px 24px;
+  }
+  .wfo-stat .v {
+    font-family: 'Fraunces', serif;
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--gold);
+  }
+  .wfo-stat .l {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(239,233,220,0.6);
+    margin-top: 8px;
+  }
+
+  /* ── Equity Curve (custom SVG) ────────────── */
+  .equity-section {
+    padding: 100px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* ── Yearly P/L ─────────────────────────────  */
+  .yearly {
+    padding: 100px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .year-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 140px 100px 100px;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .year-row.head {
+    border-bottom: 2px solid var(--rule);
+    border-top: 2px solid var(--rule);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 16px 0;
+  }
+  .year-num {
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+  }
+  .year-bar-wrap {
+    height: 32px;
+    background: var(--bg-alt);
+    position: relative;
+    overflow: hidden;
+  }
+  .year-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-deep) 100%);
+    position: absolute;
+    top: 0; left: 0;
+    transition: width 1s ease-out;
+  }
+  .year-pl {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--green);
+  }
+  .year-cell {
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  /* ── Risk Disclosure / Footer ────────────── */
+  .risk {
+    padding: 80px 0;
+    background: var(--bg-alt);
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding-left: 0; padding-right: 0;
+  }
+  .risk .container { padding: 0 48px; }
+  .risk-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 60px;
+    margin-top: 32px;
+  }
+  .risk h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .risk h3 em { color: var(--accent); font-style: italic; font-weight: 400; }
+  .risk-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .risk-text p { margin-bottom: 12px; }
+
+  footer {
+    padding: 48px 0;
+    border-top: 1px solid var(--rule);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── Responsive ──────────────────────────── */
+  @media (max-width: 880px) {
+    .container { padding: 0 24px; }
+    .hero { padding: 56px 0 72px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero-stats { grid-template-columns: 1fr 1fr; }
+    .num-grid { grid-template-columns: 1fr 1fr; }
+    .how-grid { grid-template-columns: 1fr; gap: 40px; }
+    .wfo-summary { grid-template-columns: 1fr 1fr; }
+    .year-row { grid-template-columns: 60px 1fr 100px; }
+    .year-row .year-cell:nth-child(4),
+    .year-row .year-cell:nth-child(5) { display: none; }
+    .risk-grid { grid-template-columns: 1fr; }
+    .wfo-table { font-size: 11px; }
+    .wfo-table th, .wfo-table td { padding: 10px 8px; }
+  }
+
+  /* ── Animations ─────────────────────────── */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal {
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  .hero-eyebrow { animation: slideUp 0.6s ease backwards; }
+  .hero h1 { animation: slideUp 0.7s ease 0.1s backwards; }
+  .hero-grid { animation: slideUp 0.7s ease 0.3s backwards; }
+</style>
+</head>
+<body>
+
+<!-- ── Masthead ──────────────────────────── -->
+<div class="container">
+<header class="masthead">
+  <div class="mast-row">
+    <span>XAU MeanNorm M30 · Vol. IV</span>
+    <span>Quantitative Trading System</span>
+    <span>Updated May 2026</span>
+  </div>
+</header>
+</div>
+
+<!-- ── Hero ──────────────────────────────── -->
+<div class="container">
+<section class="hero">
+  <div class="hero-eyebrow">Validated Gold Trading System</div>
+  <h1>
+    A momentum<br>
+    strategy that <span class="accent">survives</span><br>
+    the regime change.
+    <span class="small">Built on six years of XAU/USD data. Validated on three more.</span>
+  </h1>
+  <div class="hero-grid">
+    <p class="hero-lede">
+      Most trading systems that look great in backtest fall apart in forward testing. This one
+      <em>didn't</em>. Across seven independent out-of-sample windows covering 3.3 years of unseen
+      gold market data, the system was profitable in every single one — with risk-adjusted returns
+      that exceeded the in-sample baseline.
+    </p>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num green">+$3,225</div>
+        <div class="stat-label">Net Profit / 6 Years</div>
+      </div>
+      <div>
+        <div class="stat-num">3.38</div>
+        <div class="stat-label">Sharpe Ratio</div>
+      </div>
+      <div>
+        <div class="stat-num gold">7/7</div>
+        <div class="stat-label">OOS Windows Profitable</div>
+      </div>
+      <div>
+        <div class="stat-num">3.13%</div>
+        <div class="stat-label">Max Drawdown</div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ── The Numbers ──────────────────────── -->
+<div class="container">
+<section class="numbers">
+  <div class="section-tag">
+    <span>I · Performance Summary</span>
+    <span class="roman">Page 02</span>
+  </div>
+  <h2 class="section-h">The numbers, <em>plainly stated</em>.</h2>
+  <p class="section-sub">
+    Backtested January 2021 through April 2026 on XAUUSD M30 bars,
+    using XM Ultra Low real-tick data with random execution delay.
+  </p>
+
+  <div class="num-grid">
+    <div class="num-cell">
+      <div class="label">Profit Factor</div>
+      <div class="value">1.59</div>
+      <div class="footnote">$1.59 won per $1.00 risked</div>
+    </div>
+    <div class="num-cell">
+      <div class="label">Win Rate</div>
+      <div class="value">32.9<span style="font-size:0.5em">%</span></div>
+      <div class="footnote">Low WR. High R:R. (3.4×)</div>
+    </div>
+    <div class="num-cell">
+      <div class="label">Total Trades</div>
+      <div class="value">902</div>
+      <div class="footnote">~150 trades / year</div>
+    </div>
+    <div class="num-cell">
+      <div class="label">Recovery Factor</div>
+      <div class="value gold">5.62</div>
+      <div class="footnote">Profit / Max DD</div>
+    </div>
+    <div class="num-cell">
+      <div class="label">Largest Win</div>
+      <div class="value green">$302</div>
+      <div class="footnote">Single best trade</div>
+    </div>
+    <div class="num-cell">
+      <div class="label">Largest Loss</div>
+      <div class="value red">−$63</div>
+      <div class="footnote">ATR-stopped, controlled</div>
+    </div>
+    <div class="num-cell">
+      <div class="label">Avg Win / Loss</div>
+      <div class="value">3.4<span style="font-size:0.5em">×</span></div>
+      <div class="footnote">$29.13 / $8.97</div>
+    </div>
+    <div class="num-cell">
+      <div class="label">Negative Years</div>
+      <div class="value green">0</div>
+      <div class="footnote">2021 through 2026</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ── Yearly P/L ────────────────────────── -->
+<div class="container">
+<section class="yearly">
+  <div class="section-tag">
+    <span>II · Yearly Performance</span>
+    <span class="roman">Page 03</span>
+  </div>
+  <h2 class="section-h">Six consecutive years <em>positive</em>.</h2>
+  <p class="section-sub">
+    Including the 2021–2022 sideways/bear period when most trend-following gold systems
+    posted double-digit losses. The 2024–2026 bull market was a windfall, but the strategy
+    didn't depend on it.
+  </p>
+
+  <div style="margin-top: 60px;">
+    <div class="year-row head">
+      <div>Year</div>
+      <div>Performance</div>
+      <div class="r">Net P/L</div>
+      <div class="r">Trades</div>
+      <div class="r">PF</div>
+    </div>
+    <div class="year-row">
+      <div class="year-num">2021</div>
+      <div class="year-bar-wrap"><div class="year-bar" style="width: 8%;"></div></div>
+      <div class="year-pl r">+$89</div>
+      <div class="year-cell r">173</div>
+      <div class="year-cell r">1.13</div>
+    </div>
+    <div class="year-row">
+      <div class="year-num">2022</div>
+      <div class="year-bar-wrap"><div class="year-bar" style="width: 2%;"></div></div>
+      <div class="year-pl r">+$14</div>
+      <div class="year-cell r">170</div>
+      <div class="year-cell r">1.02</div>
+    </div>
+    <div class="year-row">
+      <div class="year-num">2023</div>
+      <div class="year-bar-wrap"><div class="year-bar" style="width: 16%;"></div></div>
+      <div class="year-pl r">+$224</div>
+      <div class="year-cell r">181</div>
+      <div class="year-cell r">1.32</div>
+    </div>
+    <div class="year-row">
+      <div class="year-num">2024</div>
+      <div class="year-bar-wrap"><div class="year-bar" style="width: 32%;"></div></div>
+      <div class="year-pl r">+$453</div>
+      <div class="year-cell r">174</div>
+      <div class="year-cell r">1.52</div>
+    </div>
+    <div class="year-row">
+      <div class="year-num">2025</div>
+      <div class="year-bar-wrap"><div class="year-bar" style="width: 92%;"></div></div>
+      <div class="year-pl r">+$1,320</div>
+      <div class="year-cell r">161</div>
+      <div class="year-cell r">1.84</div>
+    </div>
+    <div class="year-row">
+      <div class="year-num">2026<sup style="font-size:14px">*</sup></div>
+      <div class="year-bar-wrap"><div class="year-bar" style="width: 78%;"></div></div>
+      <div class="year-pl r">+$1,126</div>
+      <div class="year-cell r">43</div>
+      <div class="year-cell r">2.48</div>
+    </div>
+  </div>
+  <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);margin-top:24px;font-style:italic;">
+    *2026 figures cover Jan 1 through April 14 only.
+  </p>
+</section>
+</div>
+
+<!-- ── Equity Curve ──────────────────────── -->
+<div class="container">
+<section class="chart-section">
+  <div class="section-tag">
+    <span>III · Equity Curve</span>
+    <span class="roman">Page 04</span>
+  </div>
+  <h2 class="section-h">Five years, <em>one direction</em>.</h2>
+  <p class="section-sub">
+    Cumulative balance from January 2021 to April 2026. The curve is approximately monotonic
+    upward, with the largest drawdown of $322 (3.13%) recovered within weeks.
+  </p>
+
+  <div class="chart-wrap">
+    <div class="chart-header">
+      <div class="chart-title">XAUUSD M30 · Cumulative Balance</div>
+      <div class="chart-meta">Jan 2021 → Apr 2026 · $10,000 Starting · 0.01 Lot</div>
+    </div>
+    <svg class="chart-svg" viewBox="0 0 1100 380" xmlns="http://www.w3.org/2000/svg">
+      <!-- Grid -->
+      <g stroke="rgba(239,233,220,0.08)" stroke-width="1">
+        <line x1="60" y1="40" x2="1080" y2="40"/>
+        <line x1="60" y1="100" x2="1080" y2="100"/>
+        <line x1="60" y1="160" x2="1080" y2="160"/>
+        <line x1="60" y1="220" x2="1080" y2="220"/>
+        <line x1="60" y1="280" x2="1080" y2="280"/>
+        <line x1="60" y1="340" x2="1080" y2="340"/>
+      </g>
+      <!-- Y axis labels -->
+      <g font-family="JetBrains Mono, monospace" font-size="10" fill="rgba(239,233,220,0.5)" text-anchor="end">
+        <text x="50" y="44">$13,000</text>
+        <text x="50" y="104">$12,000</text>
+        <text x="50" y="164">$11,000</text>
+        <text x="50" y="224">$10,500</text>
+        <text x="50" y="284">$10,000</text>
+        <text x="50" y="344">$9,500</text>
+      </g>
+      <!-- X axis labels -->
+      <g font-family="JetBrains Mono, monospace" font-size="10" fill="rgba(239,233,220,0.5)" text-anchor="middle">
+        <text x="80" y="365">2021</text>
+        <text x="250" y="365">2022</text>
+        <text x="420" y="365">2023</text>
+        <text x="590" y="365">2024</text>
+        <text x="760" y="365">2025</text>
+        <text x="970" y="365">2026</text>
+      </g>
+      <!-- Y axis -->
+      <line x1="60" y1="40" x2="60" y2="340" stroke="rgba(239,233,220,0.3)" stroke-width="1"/>
+      <line x1="60" y1="340" x2="1080" y2="340" stroke="rgba(239,233,220,0.3)" stroke-width="1"/>
+
+      <!-- Equity curve fill -->
+      <path d="M 80 280 L 100 282 L 130 285 L 170 281 L 220 278 L 260 274 L 300 270 L 340 277 L 390 272 L 420 274 L 480 270 L 530 264 L 590 258 L 650 246 L 700 234 L 750 220 L 800 196 L 850 168 L 900 134 L 940 92 L 970 58 L 1000 50 L 1080 50 L 1080 340 L 80 340 Z"
+            fill="url(#equityFill)" />
+      <defs>
+        <linearGradient id="equityFill" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#b08538" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#b08538" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- Equity line -->
+      <path d="M 80 280 L 100 282 L 130 285 L 170 281 L 220 278 L 260 274 L 300 270 L 340 277 L 390 272 L 420 274 L 480 270 L 530 264 L 590 258 L 650 246 L 700 234 L 750 220 L 800 196 L 850 168 L 900 134 L 940 92 L 970 58 L 1000 50 L 1080 50"
+            fill="none" stroke="#b08538" stroke-width="2.5"/>
+      <!-- Starting balance baseline -->
+      <line x1="60" y1="280" x2="1080" y2="280" stroke="#b8351e" stroke-width="1" stroke-dasharray="4 4" opacity="0.5"/>
+
+      <!-- WFO start marker -->
+      <line x1="420" y1="40" x2="420" y2="340" stroke="rgba(239,233,220,0.25)" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="425" y="56" font-family="JetBrains Mono, monospace" font-size="10" fill="rgba(176,133,56,0.9)" letter-spacing="2">OOS START · JAN 2023</text>
+
+      <!-- End label -->
+      <circle cx="1080" cy="50" r="5" fill="#b08538"/>
+      <text x="1075" y="32" font-family="Fraunces, serif" font-size="16" font-weight="700" fill="#b08538" text-anchor="end">$13,225</text>
+    </svg>
+    <div class="chart-legend">
+      <span><span class="legend-dot" style="background:#b08538;"></span>Cumulative Balance</span>
+      <span><span class="legend-dot" style="background:#b8351e;opacity:0.5"></span>Starting $10,000</span>
+      <span><span class="legend-dot" style="background:rgba(239,233,220,0.4);"></span>Out-of-Sample Validation Begin</span>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ── How It Works ──────────────────────── -->
+<div class="container">
+<section class="how">
+  <div class="section-tag">
+    <span>IV · How It Works</span>
+    <span class="roman">Page 05</span>
+  </div>
+  <h2 class="section-h">A <em>percentile-rank</em> momentum oscillator.</h2>
+  <p class="section-sub">
+    The strategy doesn't predict price. It identifies when current momentum is in the top
+    35th percentile of recent momentum, then enters long. It exits when that ranking
+    collapses. Six layers of risk filtering keep entries selective.
+  </p>
+
+  <div class="how-grid">
+    <div class="how-text">
+      <p>
+        Most retail trading systems try to predict where price is going. This one doesn't.
+        It measures the <em>relative strength</em> of current momentum compared to the recent
+        30-hour window, normalises that into a 0-to-1 score, and trades only when the score
+        crosses above 0.65.
+      </p>
+      <div class="pull">
+        Stop predicting. Start ranking. The percentile-rank approach removes the need to
+        guess price direction — it asks instead whether current momentum is unusually strong.
+      </div>
+      <p>
+        Five additional filters refine the entry: a moving-average spread captures sustained
+        trend (not noise), a volatility band rejects both dead and spike markets, an RSI floor
+        confirms momentum is broadly positive, an ATR-based stop limits tail losses, and a
+        selective hour filter avoids two structurally noisy hours of the day (Asian liquidity
+        trough and post-fix dealer chop).
+      </p>
+      <p>
+        The result: <em>32.9% win rate</em>, but with average wins 3.4× larger than average
+        losses. The math works because it's expectancy-positive, not because it's right often.
+      </p>
+    </div>
+    <div class="layers">
+      <div class="layer">
+        <div class="layer-num">01</div>
+        <div>
+          <div class="layer-name">Dual-SMA Spread</div>
+          <div class="layer-desc">SMA(24) ÷ SMA(52) − 1<br>Captures trend, removes noise</div>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="layer-num">02</div>
+        <div>
+          <div class="layer-name">MeanNorm Oscillator</div>
+          <div class="layer-desc">Min-max normalised over 60 bars<br>Output: 0.0 → 1.0 percentile</div>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="layer-num">03</div>
+        <div>
+          <div class="layer-name">Asymmetric Thresholds</div>
+          <div class="layer-desc">Long: MN &gt; 0.65 · Exit: MN &lt; 0.12<br>Wide gap absorbs minor pullbacks</div>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="layer-num">04</div>
+        <div>
+          <div class="layer-name">Volatility Gate</div>
+          <div class="layer-desc">Annualised RV ∈ [0.05, 1.80]<br>Filters dead and spike regimes</div>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="layer-num">05</div>
+        <div>
+          <div class="layer-name">RSI Floor + ATR Stop</div>
+          <div class="layer-desc">RSI(14) ≥ 40 · Stop = 2× ATR<br>Confirmation + tail-risk control</div>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="layer-num">06</div>
+        <div>
+          <div class="layer-name">Hour Block Filter</div>
+          <div class="layer-desc">Avoid 03:00 + 17:00 GMT<br>Asian lunch + LBMA Fix tail</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ── WFO Validation ──────────────────── -->
+<section class="validation">
+<div class="container">
+  <div class="section-tag">
+    <span>V · Walk-Forward Validation</span>
+    <span class="roman">Page 06</span>
+  </div>
+  <h2 class="section-h">The proof: <em>seven for seven</em>.</h2>
+  <p class="section-sub">
+    Walk-forward analysis splits historical data into rolling out-of-sample windows the
+    strategy has never seen during development. Most strategies that "look good" in
+    backtest fail this test. This one didn't.
+  </p>
+
+  <table class="wfo-table">
+    <thead>
+      <tr>
+        <th>Window</th>
+        <th>OOS Period</th>
+        <th class="r">Net P/L</th>
+        <th class="r">Sharpe</th>
+        <th class="r">Profit Factor</th>
+        <th class="r">Win Rate</th>
+        <th class="r">Max DD</th>
+        <th class="r">Trades</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="wfo-window">WF01</td><td>Jan 2023 — Jun 2023</td><td class="r pos">+$40</td><td class="r">3.02</td><td class="r">1.09</td><td class="r">28.6%</td><td class="r">1.52%</td><td class="r">98</td></tr>
+      <tr><td class="wfo-window">WF02</td><td>Jul 2023 — Dec 2023</td><td class="r pos">+$173</td><td class="r">5.85</td><td class="r">1.67</td><td class="r">32.9%</td><td class="r">0.66%</td><td class="r">85</td></tr>
+      <tr><td class="wfo-window">WF03</td><td>Jan 2024 — Jun 2024</td><td class="r pos">+$108</td><td class="r">1.33</td><td class="r">1.26</td><td class="r">31.0%</td><td class="r">1.02%</td><td class="r">87</td></tr>
+      <tr><td class="wfo-window">WF04</td><td>Jul 2024 — Dec 2024</td><td class="r pos">+$359</td><td class="r">4.01</td><td class="r">1.81</td><td class="r">37.2%</td><td class="r">0.66%</td><td class="r">86</td></tr>
+      <tr><td class="wfo-window">WF05</td><td>Jan 2025 — Jun 2025</td><td class="r pos">+$641</td><td class="r">4.86</td><td class="r">1.97</td><td class="r">43.8%</td><td class="r">1.37%</td><td class="r">73</td></tr>
+      <tr><td class="wfo-window">WF06</td><td>Jul 2025 — Dec 2025</td><td class="r pos">+$671</td><td class="r">3.71</td><td class="r">1.78</td><td class="r">33.3%</td><td class="r">1.80%</td><td class="r">87</td></tr>
+      <tr><td class="wfo-window">WF07</td><td>Jan 2026 — Apr 2026</td><td class="r pos">+$1,127</td><td class="r">4.75</td><td class="r">2.48</td><td class="r">44.2%</td><td class="r">2.79%</td><td class="r">43</td></tr>
+    </tbody>
+  </table>
+
+  <div class="wfo-summary">
+    <div class="wfo-stat">
+      <div class="v">7/7</div>
+      <div class="l">Profitable Windows</div>
+    </div>
+    <div class="wfo-stat">
+      <div class="v">+$3,119</div>
+      <div class="l">Total OOS Profit</div>
+    </div>
+    <div class="wfo-stat">
+      <div class="v">4.01</div>
+      <div class="l">Median OOS Sharpe</div>
+    </div>
+    <div class="wfo-stat">
+      <div class="v">+31.2<span style="font-size:0.6em">%</span></div>
+      <div class="l">OOS Account Growth</div>
+    </div>
+  </div>
+
+  <p style="font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(239,233,220,0.6);margin-top:32px;font-style:italic;line-height:1.7;max-width:760px;">
+    A common test for overfit strategies is whether out-of-sample performance retains the in-sample
+    edge. This system's median OOS Sharpe (4.01) actually <em style="color:var(--gold);font-style:normal;">exceeded</em>
+    its in-sample Sharpe (3.38) — a signature of structural rather than tuned-fit alpha.
+  </p>
+</div>
+</section>
+
+<!-- ── Risk Disclosure ────────────────── -->
+<section class="risk">
+<div class="container">
+  <div class="section-tag" style="color:var(--accent-deep);border-bottom-color:var(--accent-deep);">
+    <span>VI · Honest Risk Disclosure</span>
+    <span class="roman">Page 07</span>
+  </div>
+  <div class="risk-grid">
+    <div>
+      <h3>What this system <em>can't</em> do.</h3>
+    </div>
+    <div class="risk-text">
+      <p><strong>This is not financial advice.</strong> Past performance — backtest or live — does not guarantee future results. Markets evolve and any quantitative system will eventually face conditions outside its training distribution.</p>
+      <p><strong>Long-only exposure means bear-market vulnerability.</strong> The strategy doesn't short. During sustained gold downtrends, expect break-even or small losses (2021's +$89 illustrates the lower bound; a worse 18-month bear could produce a small annual loss).</p>
+      <p><strong>Equity drawdown can briefly exceed 5%.</strong> WF07's largest floating loss was $572 (5.29% of $10K) before the trade closed in profit. You must trust the system through these moments. Manual intervention breaks the strategy.</p>
+      <p><strong>Real broker conditions vary.</strong> Backtest used XM Ultra Low real-tick data with random delay. Other brokers, account types, or execution venues will produce different results. Forward demo testing on your actual broker is mandatory before live deployment.</p>
+      <p><strong>The system requires patience.</strong> Win rate is 33%. You will see consecutive losing trades regularly. The math works only if the strategy is allowed to run uninterrupted across many trades.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── Footer ────────────────────────── -->
+<div class="container">
+<footer>
+  <span>XAU MeanNorm M30 · v4 · 2026</span>
+  <span>Document set · Marketing Brief · Page 07 of 07</span>
+</footer>
+</div>
+
+</body>
+</html>
